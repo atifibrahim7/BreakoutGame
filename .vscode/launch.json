@@ -1,0 +1,74 @@
+{
+    "configurations": [
+    {
+        "name": "Run Catch2 test suite",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/test/Debug/tests.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "console": "internalTerminal",
+    }, 
+    {
+        "name": "Run Catch2 tests - Mac OS",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/test/tests",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "console": "internalTerminal",
+        "MIMode": "lldb"
+    }, 
+    {
+        "name": "Craftout - Linux",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/Craftout",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description":  "Set Disassembly Flavor to Intel",
+                "text": "-gdb-set disassembly-flavor intel",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "Craftout - MacOS",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/Craftout",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "console": "internalTerminal",
+        "MIMode": "lldb"
+    },
+    {
+        "name": "Craftout - Windows",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/Debug/Craftout.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "console": "internalConsole",
+      }
+    ]
+}

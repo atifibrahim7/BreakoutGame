@@ -1,17 +1,26 @@
+#include <sdk/input.h>
 #include <sdk/window.h>
-int main()
-{
-    SDK::Window window(640, 860, "Craftout");
+#include <vector>
+#include "Paddle.h";
 
-    SDK::SpriteID ballID = window.createSprite(SDK::SpriteType::Ball, 186, 21);
-    SDK::TextID textID = window.createText("Hello World WUWUUW", 20, 10, 10);
 
-    while (window.isOpen())
-    {
+
+int main() {
+    SDK::Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Breakout");
+
+    Paddle paddle(window);
+
+    double lastTime = window.getSecondsSinceCreation();
+
+    while (window.isOpen()) {
+        double currentTime = window.getSecondsSinceCreation();
+        double deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+
+        paddle.update(deltaTime);
+
         window.draw();
     }
-
-    window.removeSprite(ballID);
 
     return 0;
 }

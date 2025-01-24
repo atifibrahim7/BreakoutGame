@@ -8,6 +8,7 @@ endif()
 
 set(SRC_FILES
     src/main.cpp
+    src/Paddle.h 
     # List the source files that you add here
 )
 

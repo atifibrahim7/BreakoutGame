@@ -3,13 +3,12 @@
 #include <vector>
 #include "Paddle.h";
 
-
-
 int main() {
     SDK::Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Breakout");
 
     Paddle paddle(window);
-    Ball * ball = new Ball(window);
+    Ball*  ball = new Ball(window);
+    BrickManager brickManager(window);
 
     double lastTime = window.getSecondsSinceCreation();
 
@@ -23,13 +22,16 @@ int main() {
         ball->update(deltaTime);
 
         paddle.checkBallCollision(*ball);
+        brickManager.checkCollisions(*ball);
 
-		// Check if ball is lost ---> TODO :  Life decrease  and if lifes == 0 then game over
         if (ball->isOffScreen()) {
-            // Reset ball
-			delete ball;
+            delete ball;
 			ball = new Ball(window);
-			
+        }
+
+        if (brickManager.allBricksDestroyed()) {
+            // Handle win condition (could add game over text here)
+            break;
         }
 
         window.draw();

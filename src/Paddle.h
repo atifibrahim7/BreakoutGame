@@ -2,7 +2,7 @@
 
 #pragma once 
 
-
+#include <vector>
 const float PADDLE_Y = 630.0f;         // Y position near bottom of screen
 const float PADDLE_SPEED = 400.0f;     // Pixels per second
 const float PADDLE_PART_WIDTH = 15.0f; // Width of each paddle sprite
@@ -70,7 +70,8 @@ public:
 
         window.moveSprite(ballSprite, xPosition, yPosition);
     }
-
+    void reverseX() { xVelocity = -xVelocity; }
+    void reverseY() { yVelocity = -yVelocity; }
     bool isOffScreen() const {
         return yPosition > WINDOW_HEIGHT;
     }
@@ -91,6 +92,9 @@ public:
 };
 #pragma endregion
 
+
+
+#pragma region Paddle 
 class Paddle {
 private:
     SDK::Window& window;
@@ -160,3 +164,136 @@ public:
         window.removeSprite(rightPart);
     }
 };
+#pragma endregion
+
+
+#pragma region Brick 
+const int BRICKS_PER_ROW = 2;
+const int BRICK_ROWS = 2;
+const float BRICK_WIDTH = 32.0f;
+const float BRICK_HEIGHT = 16.0f;
+const float BRICK_SPACING = 2.0f;
+const float BRICKS_START_Y = 50.0f;
+const int POINTS_PER_BRICK = 10;
+
+class Brick {
+private:
+    SDK::Window& window;
+    SDK::SpriteID sprite;
+    bool isActive;
+    float xPos;    
+    float yPos;
+public:
+    Brick(SDK::Window& gameWindow, float x, float y) :
+        window(gameWindow),
+        isActive(true),
+        xPos(x),
+        yPos(y) {
+        sprite = window.createSprite(SDK::SpriteType::Brick, x, y);
+    }
+
+    bool checkCollision(float ballX, float ballY) {
+        if (!isActive) return false;
+
+        float ballRight = ballX + 2 * BALL_RADIUS;
+        float ballBottom = ballY + 2 * BALL_RADIUS;
+
+        bool collision = (ballX < xPos + BRICK_WIDTH &&
+            ballRight > xPos &&
+            ballY < yPos + BRICK_HEIGHT &&
+            ballBottom > yPos);
+
+        if (collision) {
+            destroy();
+        }
+
+        return collision;
+    }
+    void destroy() {
+        if (isActive) {
+            window.removeSprite(sprite);
+            isActive = false;
+        }
+    }
+
+    bool isAlive() const { return isActive; }
+
+    ~Brick() {
+        if (isActive) {
+            window.removeSprite(sprite);
+        }
+    }
+};
+#pragma endregion 
+
+
+#pragma region BrickManager
+static const int ROWS = 5;
+static const int COLS = 8;
+static const float START_X = 100.0f;  // Starting X position
+static const float START_Y = 50.0f;   // Starting Y position
+static const float SPACING = 5.0f;    // Space between bricks
+class BrickManager {
+private:
+    SDK::Window& window;
+    SDK::TextID scoreText;
+    int score;
+
+  
+public:
+    std::vector<std::unique_ptr<Brick>> bricks;
+    BrickManager(SDK::Window& gameWindow) :
+        window(gameWindow),
+        score(0) {
+
+        scoreText = window.createText("Score: 0", 20, 10, 10);
+        initializeBricks();
+    }
+
+    void initializeBricks() {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                float x = START_X + (col * (BRICK_WIDTH + SPACING));
+                float y = START_Y + (row * (BRICK_HEIGHT + SPACING));
+
+                bricks.push_back(std::make_unique<Brick>(window, x, y));
+            }
+        }
+    }
+
+    void checkCollisions(Ball& ball) {
+        bool collisionOccurred = false;
+
+        for (auto& brick : bricks) {
+            if (brick && brick->isAlive()) {
+                if (brick->checkCollision(ball.getX(), ball.getY())) {
+                    score += 10;
+                    updateScore();
+                    ball.reverseY();  
+                    break;  
+                }
+            }
+        }
+    }
+
+    void updateScore() {
+        window.updateText(scoreText, "Score: " + std::to_string(score));
+    }
+
+    bool allBricksDestroyed() const {
+		if (bricks.empty()) return true;
+		for (const auto& brick : bricks) {
+			if (brick && brick->isAlive()) {
+				return false;
+			}
+		}
+		return true;
+    }
+
+    ~BrickManager() {
+        window.removeText(scoreText);
+        bricks.clear();  
+    }
+};
+
+#pragma endregion

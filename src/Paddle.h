@@ -4,14 +4,14 @@
 
 #include <vector>
 const float PADDLE_Y = 630.0f;         // Y position near bottom of screen
-const float PADDLE_SPEED = 400.0f;     // Pixels per second
+const float PADDLE_SPEED = 400.0f;     // Speed of paddle movement
 const float PADDLE_PART_WIDTH = 15.0f; // Width of each paddle sprite
 const float WINDOW_WIDTH = 440.0f;
 const float WINDOW_HEIGHT = 660.0f;
 
 #pragma region Ball
 const float BALL_SPEED = 300.0f;
-const float BALL_RADIUS = 8.0f;  // Assuming ball sprite is 16x16 pixels
+const float BALL_RADIUS = 8.0f;  //  ball sprite is 16x16 pixels
 const float PI = 3.14159265359f;
 const float INITIAL_ANGLE = -PI / 2; 
 
@@ -46,7 +46,7 @@ public:
             }
         }
     }
-
+	// Source : StackOverflow
     void update(double deltaTime) {
         if (!isLaunched) {
             return;
@@ -173,8 +173,8 @@ const int BRICK_ROWS = 2;
 const float BRICK_WIDTH = 32.0f;
 const float BRICK_HEIGHT = 16.0f;
 const float BRICK_SPACING = 2.0f;
-const float BRICKS_START_Y = 50.0f;
-const int POINTS_PER_BRICK = 10;
+const float startingYforBricks = 50.0f;
+const int incrementPoint = 10;
 
 class Brick {
 private:
@@ -230,31 +230,52 @@ public:
 #pragma region BrickManager
 static const int ROWS = 5;
 static const int COLS = 8;
-static const float START_X = 100.0f;  // Starting X position
-static const float START_Y = 50.0f;   // Starting Y position
-static const float SPACING = 5.0f;    // Space between bricks
+static const float startingX = 75.0f;
+static const float startingY = 50.0f;   
+static const float SPACING = 5.0f;   
+const int INITIAL_LIVES = 3;
 class BrickManager {
 private:
     SDK::Window& window;
     SDK::TextID scoreText;
     int score;
-
-  
+    SDK::TextID livesText;
+    int lives;
 public:
     std::vector<std::unique_ptr<Brick>> bricks;
     BrickManager(SDK::Window& gameWindow) :
         window(gameWindow),
-        score(0) {
+        score(0), lives(INITIAL_LIVES) {
 
-        scoreText = window.createText("Score: 0", 20, 10, 10);
+        scoreText = window.createText("Score: 0", 20, 50, 10);
+        livesText = window.createText("Lives: " + std::to_string(lives), 20, 300, 10);
         initializeBricks();
     }
+    void updateLives() {
+        window.updateText(livesText, "Lives: " + std::to_string(lives));
+    }
+    bool loseLife() {
+        lives--;
+        updateLives();
+        return lives > 0; 
+    }
 
+    bool isGameOver() const {
+        return lives <= 0;
+    }
+
+    void resetLives() {
+        lives = INITIAL_LIVES;
+        updateLives();
+    }
+    int getLives() const {
+        return lives;
+    }
     void initializeBricks() {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
-                float x = START_X + (col * (BRICK_WIDTH + SPACING));
-                float y = START_Y + (row * (BRICK_HEIGHT + SPACING));
+                float x = startingX + (col * (BRICK_WIDTH + SPACING));
+                float y = startingY + (row * (BRICK_HEIGHT + SPACING));
 
                 bricks.push_back(std::make_unique<Brick>(window, x, y));
             }
@@ -292,7 +313,8 @@ public:
 
     ~BrickManager() {
         window.removeText(scoreText);
-        bricks.clear();  
+        window.removeText(livesText); 
+        bricks.clear();
     }
 };
 

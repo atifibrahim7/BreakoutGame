@@ -2,6 +2,8 @@
 #include <sdk/window.h>
 #include <vector>
 #include "Paddle.h";
+#include "Ball.h";
+#include "Brick.h";
 
 int main() {
     SDK::Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Breakout");

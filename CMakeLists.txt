@@ -9,6 +9,8 @@ endif()
 set(SRC_FILES
     src/main.cpp
     src/Paddle.h 
+    src/Ball.h
+    src/Brick.h
     # List the source files that you add here
 )
 
@@ -28,3 +30,7 @@ set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
 message("Current VS work directory: ${CMAKE_SOURCE_DIR}")
 
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION bin)
+
+
+
+
